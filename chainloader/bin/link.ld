@@ -16,7 +16,7 @@ PHDRS
      * - Strictly speaking irrelevant for our dispatch in 32-bit protected mode,
      *   but technically the right permissions for those segments.
      */
-    boot   PT_LOAD FLAGS(7);
+    boot   PT_LOAD FLAGS(7) FILEHDR PHDRS;
     rx     PT_LOAD FLAGS(5);
     ro     PT_LOAD FLAGS(4);
     rw     PT_LOAD FLAGS(6);
@@ -59,7 +59,7 @@ SECTIONS {
     /*
      * All symbols from the assembly code.
      */
-    .boot LINK_ADDR_BOOT : AT(LOAD_ADDR_BOOT) {
+    .boot LINK_ADDR_BOOT : AT(LOAD_ADDR_BOOT) ALIGN(2M) {
         *(.boot.text)
         KEEP(*(.mb2_hdr));
         *(.boot.data)
@@ -102,13 +102,16 @@ SECTIONS {
 
     BIN_SIZE = . - LINK_ADDR_HIGH_BASE;
 
+
+    /* General Assertions */
     /*
-     * General assertions:
      * Make sure the loader fits into 2 MiB. This ensures us that we only need
      * one L1 page table with 512 entries respectively one L2 page table with
      * one huge page mapping.
      */
     ASSERT(BIN_SIZE <= 2M, "The binary must be <= 2 MiB in size in memory")
+    ASSERT(ALIGN(LINK_ADDR_BOOT, 2M) == LINK_ADDR_BOOT, "LINK_ADDR_BOOT must be 2 MiB aligned")
+    ASSERT(ALIGN(LINK_ADDR_HIGH_BASE, 2M) == LINK_ADDR_HIGH_BASE, "LINK_ADDR_HIGH_BASE must be 2 MiB aligned")
 
     /DISCARD/ :
     {

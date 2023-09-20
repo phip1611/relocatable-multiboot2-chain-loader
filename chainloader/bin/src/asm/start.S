@@ -68,14 +68,9 @@ start:
     # Prepare page tables
     #
     # Flags:
+    # -  0x1: present
     # -  0x3: present + writeable
     # - 0x83: present + writeable, huge page
-    #
-    # Structure:
-    # L4 -> L3 (lo) -> L2 (lo) -> 2 MiB r+x idendity mapping of boot code
-    #   \-> L3 (hi) -> L2 (hi) -> L1 (hi) -> x rx mappings of RX segment
-    #                                    \-> x ro mappings of RO segment
-    #                                    \-> x rw mappings of RW segment
 
     # Create identity mapping.
     M_MAP_SYMBOL32  4 LINK_ADDR_BOOT boot_mem_pt_l4 boot_mem_pt_l3_lo 0x1
